@@ -22,45 +22,23 @@ if "pending_prompt" not in st.session_state:
     st.session_state["pending_prompt"] = None
 
 
-# ---------------- FIXED ENTERPRISE CSS ----------------
+# ---------------- ENTERPRISE CSS ----------------
 st.markdown("""
 <style>
 
-/* ===== FORCE MONITOR STYLE LAYOUT ===== */
+/* Layout */
 .block-container {
     max-width: 1400px !important;
-    min-width: 1200px !important;
     margin: auto;
-}
-
-.main {
-    min-width: 1200px;
 }
 
 .stApp {
     background-color: #f4f6f9;
 }
 
-/* ===== HEADER ===== */
-h2 {
-    margin-bottom: 0px;
-}
-
-/* ===== SUGGESTION BUTTON ROW ===== */
-.suggestion-container {
-    display: flex;
-    justify-content: flex-start;   /* Align left */
-    align-items: center;
-    gap: 20px;
-    margin-top: 30px;
-    margin-bottom: 40px;
-    overflow-x: auto;              /* Prevent stacking */
-}
-
-
-/* Fixed Monitor Button Size */
+/* Buttons */
 div.stButton > button {
-    width: 260px !important;
+    width: 100% !important;
     height: 50px !important;
     border-radius: 25px;
     font-size: 14px;
@@ -75,7 +53,7 @@ div.stButton > button:hover {
     transform: translateY(-2px);
 }
 
-/* ===== CHAT BUBBLES ===== */
+/* Chat Bubbles */
 .chat-bubble {
     padding: 14px 18px;
     border-radius: 18px;
@@ -95,7 +73,7 @@ div.stButton > button:hover {
     color: #333;
 }
 
-/* ===== FIXED CHAT INPUT ===== */
+/* Fixed Chat Input */
 div[data-testid="stChatInput"] {
     position: fixed;
     bottom: 20px;
@@ -175,7 +153,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# ---------------- Suggested Questions ----------------
+# ---------------- Suggested Questions (HORIZONTAL FIX) ----------------
 suggestions = [
     "What ROI benefits does Qualesce deliver?",
     "Want to Know About Qualesce and its process?",
@@ -184,14 +162,13 @@ suggestions = [
     "Please describe the IS-AS process followed in Qualesce?",
 ]
 
-st.markdown('<div class="suggestion-container">', unsafe_allow_html=True)
+cols = st.columns(len(suggestions))
 
-for question in suggestions:
-    if st.button(question, key=f"suggestion_{question}"):
-        st.session_state["pending_prompt"] = question
-        st.rerun()
-
-st.markdown('</div>', unsafe_allow_html=True)
+for i, question in enumerate(suggestions):
+    with cols[i]:
+        if st.button(question, key=f"suggestion_{i}"):
+            st.session_state["pending_prompt"] = question
+            st.rerun()
 
 
 # ---------------- AWS Setup ----------------
@@ -272,4 +249,3 @@ if prompt:
     st.session_state["messages"].append(
         {"role": "assistant", "content": answer}
     )
-
