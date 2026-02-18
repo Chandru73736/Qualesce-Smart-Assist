@@ -53,11 +53,12 @@ section[data-testid="stSidebar"] { background-color: #e9eef6; }
 }
  
 .user-bubble {
-    background-color: #0b3c6d;
+    background: linear-gradient(135deg, #4f8edc, #76a9ea);
     color: white;
     margin-left: auto;
     border-bottom-right-radius: 4px;
 }
+
  
 .assistant-bubble {
     background-color: white;
@@ -84,18 +85,19 @@ div.stButton > button {
     border-radius: 20px;
     padding: 6px 14px;
     font-size: 13px;
-    background: linear-gradient(135deg, #0b3c6d, #1f5ea8);
+    background: linear-gradient(135deg, #4f8edc, #76a9ea);
     color: white;
     border: none;
     transition: all 0.25s ease;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
- 
+
 div.stButton > button:hover {
     transform: translateY(-2px) scale(1.03);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    background: linear-gradient(135deg, #1f5ea8, #0b3c6d);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    background: linear-gradient(135deg, #76a9ea, #4f8edc);
 }
+
  
 /* Chat input fixed */
 div[data-testid="stChatInput"] {
@@ -189,29 +191,22 @@ st.markdown("""
  
  
 # ---------------- Suggested Questions ----------------
-st.markdown("### 💡 Suggested Questions")
- 
+
 suggestions = [
-    "Explain the PO Parking automation process",
-    "How does Job Scheduling Cancelled Notification work?",
-    "Describe the Greeting Birthday Mail workflow",
-    "What is the Vendor Confirmation process?",
-    "Explain Ex-factor and HUB sales automation",
-    "What are the exception handling strategies?",
     "What ROI benefits does Qualesce deliver?",
-    "Which SAP T-codes are used in our automations?"
+    "Want to Know About Qualesce and its process?",
+    "Please provide a complete end-to-end overview of SAP",
+    "What is the Vendor Confirmation process?",
+    "Please describe the IS-AS process followed in Qualesce?",
 ]
- 
-st.markdown('<div class="suggestion-container">', unsafe_allow_html=True)
- 
-for question in suggestions:
-    if st.button(question, key=f"suggestion_{question}"):
+
+# Create columns equal to number of suggestions
+cols = st.columns(len(suggestions))
+
+for col, question in zip(cols, suggestions):
+    if col.button(question, key=f"suggestion_{question}"):
         st.session_state["pending_prompt"] = question
         st.rerun()
- 
-st.markdown('</div>', unsafe_allow_html=True)
- 
- 
 # ---------------- AWS Setup ----------------
 AWS_ACCESS_KEY_ID = st.secrets["AWS_ACCESS_KEY_ID"]
 AWS_SECRET_ACCESS_KEY = st.secrets["AWS_SECRET_ACCESS_KEY"]
