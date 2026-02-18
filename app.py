@@ -196,7 +196,7 @@ suggestions = [
     "What ROI benefits does Qualesce deliver?",
     "Want to Know About Qualesce and its process?",
     "Please provide a complete end-to-end overview of SAP",
-    "What is the Vendor Confirmation process?",
+    "Please explain the industries served by Qualesce?",
     "Please describe the IS-AS process followed in Qualesce?",
 ]
 
@@ -285,4 +285,5 @@ if prompt:
     st.session_state["messages"].append(
         {"role": "assistant", "content": answer}
     )
+
  
