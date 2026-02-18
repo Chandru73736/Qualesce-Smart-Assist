@@ -1,6 +1,5 @@
 import streamlit as st
 import boto3
-import os
 import time
 from auth import create_user_table, add_user, login_user
 
@@ -19,86 +18,111 @@ if "authenticated" not in st.session_state:
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
 
-# ---------------- GLOBAL CSS ----------------
+if "pending_prompt" not in st.session_state:
+    st.session_state["pending_prompt"] = None
+
+
+# ---------------- FIXED ENTERPRISE CSS ----------------
 st.markdown("""
 <style>
+
+/* ===== FORCE MONITOR STYLE LAYOUT ===== */
+.block-container {
+    max-width: 1400px !important;
+    min-width: 1200px !important;
+    margin: auto;
+}
+
+.main {
+    min-width: 1200px;
+}
+
 .stApp {
     background-color: #f4f6f9;
 }
 
-section[data-testid="stSidebar"] {
-    background-color: #e9eef6;
+/* ===== HEADER ===== */
+h2 {
+    margin-bottom: 0px;
 }
 
-.block-container {
-    padding-top: 1rem;
-    padding-bottom: 6rem;
+/* ===== SUGGESTION BUTTON ROW ===== */
+.suggestion-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 30px;
+    margin-bottom: 40px;
 }
 
+/* Fixed Monitor Button Size */
+div.stButton > button {
+    width: 260px !important;
+    height: 50px !important;
+    border-radius: 25px;
+    font-size: 14px;
+    background: linear-gradient(135deg, #4f8edc, #76a9ea);
+    color: white;
+    border: none;
+    white-space: normal !important;
+    transition: 0.3s ease;
+}
+
+div.stButton > button:hover {
+    transform: translateY(-2px);
+}
+
+/* ===== CHAT BUBBLES ===== */
 .chat-bubble {
     padding: 14px 18px;
     border-radius: 18px;
     margin-bottom: 12px;
     max-width: 70%;
     font-size: 15px;
-    animation: fadeIn 0.25s ease-in-out;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 .user-bubble {
-    background-color: #0b3c6d;
+    background: linear-gradient(135deg, #4f8edc, #76a9ea);
     color: white;
     margin-left: auto;
-    border-bottom-right-radius: 4px;
 }
 
 .assistant-bubble {
     background-color: white;
     color: #333;
-    margin-right: auto;
-    border-bottom-left-radius: 4px;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(4px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
+/* ===== FIXED CHAT INPUT ===== */
 div[data-testid="stChatInput"] {
     position: fixed;
     bottom: 20px;
-    left: 55%;
+    left: 50%;
     transform: translateX(-50%);
-    width: 50%;
+    width: 800px;
 }
 
 div[data-testid="stChatInput"] textarea {
-    border-radius: 20px !important;
-    border: 1px solid #ddd !important;
-    background-color: white !important;
+    border-radius: 25px !important;
     padding: 16px !important;
-    font-size: 15px !important;
-    min-height: 55px !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-.logout-container {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    width: 200px;
-}
 </style>
 """, unsafe_allow_html=True)
+
 
 # ---------------- Authentication ----------------
 if not st.session_state["authenticated"]:
 
-    st.markdown("<h2 style='text-align:center;color:#0b3c6d;'>🔐 Qualesce Login</h2>", unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([4, 4, 4])
 
-    left, center, right = st.columns([3, 4, 3])
+    with col2:
+        st.markdown("""
+            <div style="margin-top:80px;">
+                <h2 style="color:#0b3c6d;">🔐 Qualesce Smart Assist</h2>
+                <h3 style="color:#0b3c6d;">Login</h3>
+            </div>
+        """, unsafe_allow_html=True)
 
-    with center:
         tab1, tab2 = st.tabs(["Login", "Sign Up"])
 
         with tab1:
@@ -124,86 +148,88 @@ if not st.session_state["authenticated"]:
 
     st.stop()
 
+
 # ---------------- Sidebar ----------------
 st.sidebar.title("📜 Chat History")
 
-for i, m in enumerate(st.session_state["messages"]):
-    if m["role"] == "user":
-        st.sidebar.markdown(f"**Q{i+1}:** {m['content'][:40]}...")
+if st.session_state["messages"]:
+    for i, m in enumerate(st.session_state["messages"]):
+        if m["role"] == "user":
+            st.sidebar.markdown(f"**Q{i+1}:** {m['content'][:40]}...")
 
-st.sidebar.markdown('<div class="logout-container">', unsafe_allow_html=True)
 if st.sidebar.button("Logout"):
     st.session_state["authenticated"] = False
     st.session_state["messages"] = []
     st.rerun()
-st.sidebar.markdown('</div>', unsafe_allow_html=True)
+
 
 # ---------------- Header ----------------
-logo_path = r"C:\Users\ChandruS\OneDrive - Qualesce\Documents\QI\Qualesce Logo.png"
+st.markdown("""
+<div style="padding-top:25px;">
+<h2 style="color:#0b3c6d;">🤖 Qualesce Knowledge Assistant</h2>
+<p style="color:#555;">Ask questions based on internal knowledge</p>
+</div>
+""", unsafe_allow_html=True)
 
-col1, col2 = st.columns([7, 3])
 
-with col1:
-    st.markdown("""
-    <div style="padding-top:25px;">
-        <div style="font-size:32px;font-weight:700;color:#0b3c6d;">
-            🤖 Qualesce Knowledge Assistant
-        </div>
-        <div style="font-size:15px;color:#555;margin-top:4px;">
-            Ask questions based on internal knowledge
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+# ---------------- Suggested Questions ----------------
+suggestions = [
+    "What ROI benefits does Qualesce deliver?",
+    "Want to Know About Qualesce and its process?",
+    "Please provide a complete end-to-end overview of SAP",
+    "What is the Vendor Confirmation process?",
+    "Please describe the IS-AS process followed in Qualesce?",
+]
 
-with col2:
-    if os.path.exists(logo_path):
-        st.markdown('<div style="text-align:right;padding-top:35px;">', unsafe_allow_html=True)
-        st.image(logo_path, width=220)
-        st.markdown('</div>', unsafe_allow_html=True)
+st.markdown('<div class="suggestion-container">', unsafe_allow_html=True)
+
+for question in suggestions:
+    if st.button(question, key=f"suggestion_{question}"):
+        st.session_state["pending_prompt"] = question
+        st.rerun()
+
+st.markdown('</div>', unsafe_allow_html=True)
+
 
 # ---------------- AWS Setup ----------------
 AWS_ACCESS_KEY_ID = st.secrets["AWS_ACCESS_KEY_ID"]
 AWS_SECRET_ACCESS_KEY = st.secrets["AWS_SECRET_ACCESS_KEY"]
 AWS_DEFAULT_REGION = st.secrets["AWS_DEFAULT_REGION"]
 
-# ---------------- Chat Display ----------------
+
+# ---------------- Display Chat ----------------
 for msg in st.session_state["messages"]:
     if msg["role"] == "user":
-        st.markdown(f'<div class="chat-bubble user-bubble">{msg["content"]}</div>', unsafe_allow_html=True)
+        st.markdown(
+            f'<div class="chat-bubble user-bubble">{msg["content"]}</div>',
+            unsafe_allow_html=True
+        )
     else:
-        st.markdown(f'<div class="chat-bubble assistant-bubble">{msg["content"]}</div>', unsafe_allow_html=True)
+        st.markdown(
+            f'<div class="chat-bubble assistant-bubble">{msg["content"]}</div>',
+            unsafe_allow_html=True
+        )
 
-# ---------------- Suggested Questions (Horizontal Row) ----------------
-if len(st.session_state["messages"]) == 0:
-
-    st.markdown("### 💡 Try asking:")
-
-    suggestions = [
-        "Explain PO Parking process",
-        "How does Job Scheduling work?",
-        "Describe Birthday Mail workflow",
-        "What is Vendor Confirmation?",
-        "Explain HUB sales automation"
-    ]
-
-    cols = st.columns(len(suggestions))
-
-    for i, question in enumerate(suggestions):
-        if cols[i].button(question, use_container_width=True):
-            st.session_state["suggested_prompt"] = question
-            st.rerun()
 
 # ---------------- Chat Input ----------------
-if "suggested_prompt" in st.session_state:
-    prompt = st.session_state.pop("suggested_prompt")
-else:
-    prompt = st.chat_input("Message Qualesce Assistant...")
+prompt = st.chat_input("Message Qualesce Assistant...")
 
+if st.session_state["pending_prompt"]:
+    prompt = st.session_state["pending_prompt"]
+    st.session_state["pending_prompt"] = None
+
+
+# ---------------- Process Prompt ----------------
 if prompt:
 
-    st.session_state["messages"].append({"role": "user", "content": prompt})
+    st.session_state["messages"].append(
+        {"role": "user", "content": prompt}
+    )
 
-    st.markdown(f'<div class="chat-bubble user-bubble">{prompt}</div>', unsafe_allow_html=True)
+    st.markdown(
+        f'<div class="chat-bubble user-bubble">{prompt}</div>',
+        unsafe_allow_html=True
+    )
 
     assistant_container = st.empty()
     assistant_container.markdown(
