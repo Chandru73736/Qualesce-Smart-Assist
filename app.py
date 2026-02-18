@@ -49,11 +49,14 @@ h2 {
 /* ===== SUGGESTION BUTTON ROW ===== */
 .suggestion-container {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;   /* Align left */
+    align-items: center;
     gap: 20px;
     margin-top: 30px;
     margin-bottom: 40px;
+    overflow-x: auto;              /* Prevent stacking */
 }
+
 
 /* Fixed Monitor Button Size */
 div.stButton > button {
@@ -269,3 +272,4 @@ if prompt:
     st.session_state["messages"].append(
         {"role": "assistant", "content": answer}
     )
+
