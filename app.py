@@ -1,6 +1,5 @@
 import streamlit as st
 import boto3
-import os
 import time
 from auth import create_user_table, add_user, login_user
 
@@ -23,31 +22,31 @@ if "pending_prompt" not in st.session_state:
     st.session_state["pending_prompt"] = None
 
 
-# ---------------- GLOBAL CSS ----------------
+# ---------------- GLOBAL CSS (Responsive Version) ----------------
 st.markdown("""
 <style>
 
+html { zoom: 100%; }
+
 .stApp { background-color: #f4f6f9; }
 
-section[data-testid="stSidebar"] { background-color: #e9eef6; }
-
-.block-container { padding-top: 1rem; padding-bottom: 6rem; }
-
-/* Center Login Screen */
-.login-center {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    margin-top: 80px;
-    padding-left: 200px;        
+section[data-testid="stSidebar"] {
+    background-color: #e9eef6;
 }
 
-/* Chat Bubbles */
+.block-container {
+    padding-top: 1rem;
+    padding-bottom: 6rem;
+    max-width: 1100px;
+    margin: auto;
+}
+
+/* ---------------- Chat Bubbles ---------------- */
 .chat-bubble {
     padding: 14px 18px;
     border-radius: 18px;
     margin-bottom: 12px;
-    max-width: 70%;
+    max-width: 75%;
     font-size: 15px;
     animation: fadeIn 0.25s ease-in-out;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
@@ -72,22 +71,23 @@ section[data-testid="stSidebar"] { background-color: #e9eef6; }
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Suggestion Container */
+/* ---------------- Suggestion Buttons ---------------- */
 .suggestion-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 15px;
-    margin-bottom: 25px;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 30px;
 }
 
-/* Suggestion Buttons */
 div.stButton > button {
-    border-radius: 18px;
-    padding: 6px 12px;
+    border-radius: 20px;
+    padding: 8px 14px;
     font-size: 13px;
-    width: 230px !important;
-    height: 38px !important;
+    min-width: 180px;
+    max-width: 250px;
+    height: 40px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -101,16 +101,16 @@ div.stButton > button {
 div.stButton > button:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 10px rgba(0,0,0,0.12);
-    background: linear-gradient(135deg, #76a9ea, #4f8edc);
 }
 
-/* Chat input fixed */
+/* ---------------- Chat Input (Responsive & Centered) ---------------- */
 div[data-testid="stChatInput"] {
     position: fixed;
     bottom: 20px;
-    left: 55%;
+    left: 50%;
     transform: translateX(-50%);
-    width: 50%;
+    width: 60%;
+    max-width: 900px;
 }
 
 div[data-testid="stChatInput"] textarea {
@@ -129,19 +129,14 @@ div[data-testid="stChatInput"] textarea {
 # ---------------- Authentication ----------------
 if not st.session_state["authenticated"]:
 
-    st.markdown('<div class="login-center">', unsafe_allow_html=True)
-
-    col1, col2, col3 = st.columns([5, 4, 6])
+    col1, col2, col3 = st.columns([4, 4, 4])
 
     with col2:
-
         st.markdown("""
-            <div style="margin-top:40px;">
+            <div style="margin-top:80px;">
                 <h2 style="color:#0b3c6d;">🔐 Qualesce Smart Assist</h2>
+                <h3 style="color:#0b3c6d;">Login</h3>
             </div>
-            <div style="margin-top:40px;">
-                <h2 style="color:#0b3c6d;">Login</h2>
-            </div>        
         """, unsafe_allow_html=True)
 
         tab1, tab2 = st.tabs(["Login", "Sign Up"])
@@ -167,7 +162,6 @@ if not st.session_state["authenticated"]:
                 else:
                     st.error("Username already exists")
 
-    st.markdown('</div>', unsafe_allow_html=True)
     st.stop()
 
 
