@@ -22,104 +22,88 @@ if "pending_prompt" not in st.session_state:
     st.session_state["pending_prompt"] = None
 
 
-# ---------------- GLOBAL CSS (Responsive Version) ----------------
+# ---------------- FIXED ENTERPRISE CSS ----------------
 st.markdown("""
 <style>
 
-html { zoom: 100%; }
-
-.stApp { background-color: #f4f6f9; }
-
-section[data-testid="stSidebar"] {
-    background-color: #e9eef6;
-}
-
+/* ===== FORCE MONITOR STYLE LAYOUT ===== */
 .block-container {
-    padding-top: 1rem;
-    padding-bottom: 6rem;
-    max-width: 1100px;
+    max-width: 1400px !important;
+    min-width: 1200px !important;
     margin: auto;
 }
 
-/* ---------------- Chat Bubbles ---------------- */
+.main {
+    min-width: 1200px;
+}
+
+.stApp {
+    background-color: #f4f6f9;
+}
+
+/* ===== HEADER ===== */
+h2 {
+    margin-bottom: 0px;
+}
+
+/* ===== SUGGESTION BUTTON ROW ===== */
+.suggestion-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 30px;
+    margin-bottom: 40px;
+}
+
+/* Fixed Monitor Button Size */
+div.stButton > button {
+    width: 260px !important;
+    height: 50px !important;
+    border-radius: 25px;
+    font-size: 14px;
+    background: linear-gradient(135deg, #4f8edc, #76a9ea);
+    color: white;
+    border: none;
+    white-space: normal !important;
+    transition: 0.3s ease;
+}
+
+div.stButton > button:hover {
+    transform: translateY(-2px);
+}
+
+/* ===== CHAT BUBBLES ===== */
 .chat-bubble {
     padding: 14px 18px;
     border-radius: 18px;
     margin-bottom: 12px;
-    max-width: 75%;
+    max-width: 70%;
     font-size: 15px;
-    animation: fadeIn 0.25s ease-in-out;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 .user-bubble {
     background: linear-gradient(135deg, #4f8edc, #76a9ea);
     color: white;
     margin-left: auto;
-    border-bottom-right-radius: 4px;
 }
 
 .assistant-bubble {
     background-color: white;
     color: #333;
-    margin-right: auto;
-    border-bottom-left-radius: 4px;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(4px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* ---------------- Suggestion Buttons ---------------- */
-.suggestion-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    justify-content: center;
-    margin-top: 20px;
-    margin-bottom: 30px;
-}
-
-div.stButton > button {
-    border-radius: 20px;
-    padding: 8px 14px;
-    font-size: 13px;
-    min-width: 180px;
-    max-width: 250px;
-    height: 40px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    background: linear-gradient(135deg, #4f8edc, #76a9ea);
-    color: white;
-    border: none;
-    transition: all 0.25s ease;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-}
-
-div.stButton > button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
-}
-
-/* ---------------- Chat Input (Responsive & Centered) ---------------- */
+/* ===== FIXED CHAT INPUT ===== */
 div[data-testid="stChatInput"] {
     position: fixed;
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-    width: 60%;
-    max-width: 900px;
+    width: 800px;
 }
 
 div[data-testid="stChatInput"] textarea {
-    border-radius: 20px !important;
-    border: 1px solid #ddd !important;
-    background-color: white !important;
+    border-radius: 25px !important;
     padding: 16px !important;
-    font-size: 15px !important;
-    min-height: 55px !important;
 }
 
 </style>
@@ -193,7 +177,7 @@ suggestions = [
     "What ROI benefits does Qualesce deliver?",
     "Want to Know About Qualesce and its process?",
     "Please provide a complete end-to-end overview of SAP",
-    "Please explain the industries served by Qualesce?",
+    "What is the Vendor Confirmation process?",
     "Please describe the IS-AS process followed in Qualesce?",
 ]
 
